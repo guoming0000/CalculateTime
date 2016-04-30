@@ -99,6 +99,7 @@ private:
     //default btn state
     QPushButton *m_pDefaultBtn[BTN_COUNT];
     QPushButton *m_pLanguageBtn;
+    QPushButton *m_pCloseBtn;
     QTranslator *m_pTranslator;
 };
 

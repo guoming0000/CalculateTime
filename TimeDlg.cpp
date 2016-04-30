@@ -1,3 +1,6 @@
+//#define _WINDOWS
+#define _ANDROID
+
 #include "TimeDlg.h"
 #include <QIcon>
 #include <QLabel>
@@ -22,10 +25,13 @@ CTimeDlg::CTimeDlg(QWidget *parent)
     updateText();
     setWindowOpacity(0.9);
 
-    Qt::WindowFlags flags = windowFlags() - Qt::WindowContextHelpButtonHint;//delete question flag
-    setWindowFlags(flags);
+#ifdef _ANDROID
+    showFullScreen();//for android
+#endif
 
-//    m_pToNowTime->setOpenExternalLinks();
+    //Qt::WindowFlags flags = windowFlags() - Qt::WindowContextHelpButtonHint;//delete question flag
+    //setWindowFlags(flags);
+    //m_pToNowTime->setOpenExternalLinks();
 }
 
 void CTimeDlg::SaveTranslator(QTranslator *translator)
@@ -66,20 +72,37 @@ void CTimeDlg::createComponent()
 
     m_pLanguageBtn = new QPushButton;
     m_pLanguageBtn->setObjectName("languageBtn");
-    m_pLanguageBtn->setMinimumSize(40, 32);
+    m_pLanguageBtn->setMinimumSize(60, 60);
+
+    m_pCloseBtn = new QPushButton;
+    m_pCloseBtn->setObjectName("closeBtn");
+    m_pCloseBtn->setMinimumSize(60, 60);
 
 }
 
 //make a layout
 void CTimeDlg::createLayout()
 {
-    QHBoxLayout *default_btns = new QHBoxLayout;
-    for(int i = 0; i < BTN_COUNT; ++i)
+    QHBoxLayout *time_btns[2];
+    time_btns[0] = new QHBoxLayout;
+    time_btns[1] = new QHBoxLayout;
+    int half = BTN_COUNT / 2;
+
+    for(int i = 0; i < half; ++i)
     {
-        default_btns->addWidget(m_pDefaultBtn[i]);
+        time_btns[0]->addWidget(m_pDefaultBtn[i]);
+        time_btns[1]->addWidget(m_pDefaultBtn[i + half]);
     }
+
+    QVBoxLayout *btn_layout = new QVBoxLayout;
+    btn_layout->addLayout(time_btns[0]);
+    btn_layout->addLayout(time_btns[1]);
+
+    QHBoxLayout *default_btns = new QHBoxLayout;
+    default_btns->addLayout(btn_layout);
     default_btns->addStretch(1);
     default_btns->addWidget(m_pLanguageBtn);
+    default_btns->addWidget(m_pCloseBtn);
 
     QHBoxLayout *disp_time = new QHBoxLayout;
     disp_time->addStretch(1);
@@ -121,11 +144,13 @@ void CTimeDlg::createLayout()
     time_layout->addLayout(pass_time, 1);
     time_layout->addLayout(destination_time, 1);
     time_layout->addLayout(to_now, 4);
+    time_layout->addStretch(8);
 
     setLayout(time_layout);
 
-    QFile file("images/darkorange.qss");
-    file.open(QFile::ReadOnly);
+
+    QFile file(":/images/darkorange.qss");
+    qDebug()<<file.open(QFile::ReadOnly);
     this->setStyleSheet(file.readAll());
 }
 
@@ -161,6 +186,8 @@ void CTimeDlg::init()
     {
         connect(m_pDefaultBtn[i], SIGNAL(clicked(bool)), this, SLOT(pressBtn()));
     }
+
+    connect(m_pCloseBtn, SIGNAL(clicked(bool)), this, SLOT(close()));
 }
 
 //when start time changed

@@ -17,10 +17,20 @@ SOURCES += main.cpp\
 HEADERS  += TimeDlg.h \
     UITools/LineEdit.h
 
-DISTFILES +=
-
-RESOURCES +=
+RESOURCES += \
+    resource.qrc
 
 TRANSLATIONS = zh.ts
 
 RC_FILE+= ./images/icon.rc
+
+DISTFILES += \
+    android/AndroidManifest.xml \
+    android/gradle/wrapper/gradle-wrapper.jar \
+    android/gradlew \
+    android/res/values/libs.xml \
+    android/build.gradle \
+    android/gradle/wrapper/gradle-wrapper.properties \
+    android/gradlew.bat
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
